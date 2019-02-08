@@ -1,6 +1,7 @@
 alias dev="cd ~/Desktop/Development"
 alias ds="dt"
 alias gs="git status"
+alias gp="git pull"
 alias mp="git checkout master && git pull"
 alias mpi="git checkout intl-master && git pull"
 alias gc="git add . && git stash"
@@ -32,3 +33,15 @@ fi
 if type _git &>/dev/null && [ -f /usr/local/etc/bash_completion.d/git-completion.bash ]; then
   complete -o default -o nospace -F _git g
 fi
+
+source /usr/local/etc/bash_completion.d/git-prompt.sh
+export GIT_PS1_SHOWDIRTYSTATE=true
+export GIT_PS1_SHOWCOLORHINTS=true
+
+git config --global core.excludesfile ~/.gitexcludes
+
+# Only load Liquid Prompt in interactive shells, not from a script or from scp
+LP_PATH_KEEP=2
+LP_PATH_LENGTH=20
+LP_USER_ALWAYS=0
+[[ $- = *i* ]] && source ~/liquidprompt/liquidprompt
