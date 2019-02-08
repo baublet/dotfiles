@@ -3,3 +3,10 @@
 !.gitignore
 !.gitconfig
 !.gitexcludes
+!liquidprompt
+!liquidprompt/liquid.ps1
+!liquidprompt/liquid.theme
+!liquidprompt/liquidprompt
+!liquidprompt/liquidprompt.plugin.zsh
+!liquidprompt/liquidpromptrc-dist
+!liquidprompt/pmset-simulator
