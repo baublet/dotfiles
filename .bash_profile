@@ -1,13 +1,17 @@
 alias dev="cd ~/Desktop/Development"
+
 alias ds="dt"
 alias gs="git status"
 alias gp="git pull"
 alias mp="git checkout master && git pull"
 alias mpi="git checkout intl-master && git pull"
 alias gc="git add . && git stash"
+
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
+
 alias dt="dev && cd dm-vagrant && vagrant reload && cd source/ee && gc && mp && cd ../ee-intl && gc && mpi && cd ../ee-intl-sd && gc && mpi && cd ../magento && gc && mp && dev && sublime /Users/rscdm/Desktop/Development/dm-vagrant && dev"
 alias cca="gulp && git commit -am \"Commit compiled assets\" && git push"
+
 alias ee="dev && cd dm-vagrant/source/ee"
 alias magento="dev && cd dm-vagrant/source/magento"
 alias ee-intl="dev && cd dm-vagrant/source/ee-intl"
