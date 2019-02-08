@@ -9,8 +9,9 @@ alias gc="git add . && git stash"
 
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 
-alias dt="dev && cd dm-vagrant && vagrant reload && cd source/ee && gc && mp && cd ../ee-intl && gc && mpi && cd ../ee-intl-sd && gc && mpi && cd ../magento && gc && mp && dev"
+alias dt="dev && cd dm-vagrant && vagrant reload && dr"
 alias cca="gulp && git commit -am \"Commit compiled assets\" && git push"
+alias dr="dev && cd dm-vagrant && cd source/ee && gc && mp && cd ../ee-intl && gc && mpi && cd ../ee-intl-sd && gc && mpi && cd ../magento && gc && mp && dev && dm-vagrant/source"
 
 alias ee="dev && cd dm-vagrant/source/ee"
 alias magento="dev && cd dm-vagrant/source/magento"
