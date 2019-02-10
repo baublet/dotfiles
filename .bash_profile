@@ -6,6 +6,7 @@ alias gp="git pull"
 alias mp="git checkout master && git pull"
 alias mpi="git checkout intl-master && git pull"
 alias gc="git add . && git stash"
+alias gip="git push"
 
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 
