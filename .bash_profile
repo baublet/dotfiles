@@ -40,6 +40,7 @@ if type _git &>/dev/null && [ -f /usr/local/etc/bash_completion.d/git-completion
   complete -o default -o nospace -F _git g
 fi
 
+source ~/git-completion.bash
 source /usr/local/etc/bash_completion.d/git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=true
 export GIT_PS1_SHOWCOLORHINTS=true
