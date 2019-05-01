@@ -25,12 +25,12 @@ elif [ -f /etc/bash_completion ]; then
 fi
 
 # Enable tab completion for `g` by marking it as an alias for `git`
-if type _git &>/dev/null && [ -f /usr/local/etc/bash_completion.d/git-completion.bash ]; then
+if type _git &>/dev/null && [ -f ~/git-completion.bash ]; then
   complete -o default -o nospace -F _git g
 fi
 
 source ~/git-completion.bash
-source /usr/local/etc/bash_completion.d/git-prompt.sh
+source ~/git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=true
 export GIT_PS1_SHOWCOLORHINTS=true
 
