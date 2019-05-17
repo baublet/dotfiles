@@ -10,6 +10,7 @@ alias gip="git push"
 
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 
+export SHELL="/bin/bash"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 
