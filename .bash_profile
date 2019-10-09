@@ -14,6 +14,8 @@ export SHELL="/bin/bash"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 
+eval "$(rbenv init -)"
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
@@ -41,4 +43,8 @@ git config --global core.excludesfile ~/.gitexcludes
 LP_PATH_KEEP=2
 LP_PATH_LENGTH=20
 LP_USER_ALWAYS=0
+LP_ENABLE_LOAD=0
 [[ $- = *i* ]] && source ~/liquidprompt/liquidprompt
+export PATH="/usr/local/opt/mongodb@3.6/bin:$PATH"
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
