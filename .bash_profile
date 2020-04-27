@@ -1,3 +1,7 @@
+TESTS_PASSWORDS_YEI_DEFAULT=RSIh*sxvKEGTY6W6QyIiHp9BfbxpankWDgeYwWkXrHevc%2etu
+TESTS_PASSWORDS_HIGHGROUND_DEFAULT=qatest1
+KW_HOST_WITH_SUBDOMAIN=https://subdomain.kw.develop.non-prod.kazoohr.io/
+
 alias dev="cd ~/projects"
 alias ds="dev"
 
@@ -6,7 +10,8 @@ alias gs="git status"
 alias gp="git pull"
 alias mp="git checkout master && git pull"
 alias gc="git add . && git stash"
-alias gip="git push"
+alias gco="git commit --no-verify"
+alias gip="git push --no-verify"
 alias rebase="git checkout master && git pull && git checkout @{-1} && git rebase master"
 
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
