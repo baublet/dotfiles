@@ -1,6 +1,5 @@
-TESTS_PASSWORDS_YEI_DEFAULT=RSIh*sxvKEGTY6W6QyIiHp9BfbxpankWDgeYwWkXrHevc%2etu
-TESTS_PASSWORDS_HIGHGROUND_DEFAULT=qatest1
-KW_HOST_WITH_SUBDOMAIN=https://subdomain.kw.develop.non-prod.kazoohr.io/
+export SHELL="/bin/zsh"
+export BASH_SILENCE_DEPRECATION_WARNING=1
 
 alias dev="cd ~/projects"
 alias ds="dev"
@@ -16,15 +15,16 @@ alias rebase="git checkout master && git pull && git checkout @{-1} && git rebas
 
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 
-export SHELL="/bin/bash"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 
 eval "$(rbenv init -)"
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+# This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # Add tab completion for many Bash commands
 if which brew &>/dev/null && [ -f "$(brew --prefix)/share/bash-completion/bash_completion" ]; then
