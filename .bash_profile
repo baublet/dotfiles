@@ -18,7 +18,7 @@ alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
 
-eval "$(rbenv init -)"
+# eval "$(rbenv init -)"
 
 export NVM_DIR="$HOME/.nvm"
 # This loads nvm
