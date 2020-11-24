@@ -1,4 +1,9 @@
-export SHELL="/bin/zsh"
+if typeset -f zsh > /dev/null; then
+  export SHELL="/bin/zsh"
+else
+  export SHELL="/bin/bash"
+fi
+
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
 alias dev="cd ~/projects"
