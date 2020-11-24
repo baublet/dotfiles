@@ -11,7 +11,10 @@ alias mp="git checkout master && git pull"
 alias gc="git add . && git stash"
 alias gco="git commit --no-verify"
 alias gip="git push --no-verify"
+# Rebases the current branch with master (only works if "master" is a branch that exists)
 alias rebase="git checkout master && git pull && git checkout @{-1} && git rebase master"
+# Squashes all commits on the current branch into one commit (only works if "master" is your main branch)
+alias squash="git reset $(git merge-base master $(git rev-parse --abbrev-ref HEAD))"
 
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 
