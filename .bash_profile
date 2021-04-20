@@ -1,13 +1,10 @@
-if typeset -f zsh > /dev/null; then
+if typeset -f zsh >/dev/null; then
   export SHELL="/bin/zsh"
 else
   export SHELL="/bin/bash"
 fi
 
 export BASH_SILENCE_DEPRECATION_WARNING=1
-
-alias dev="cd ~/projects"
-alias ds="dev"
 
 # Git aliases
 alias gs="git status"
@@ -19,19 +16,19 @@ alias gip="git push --no-verify"
 # Rebases the current branch with master (only works if "master" is a branch that exists)
 alias rebase="git checkout master && git pull && git checkout @{-1} && git rebase master"
 # Squashes all commits on the current branch into one commit (only works if "master" is your main branch)
-alias squash="git reset $(git merge-base master $(git rev-parse --abbrev-ref HEAD))"
+alias squash="git reset \$(git merge-base master \$(git rev-parse --abbrev-ref HEAD))"
 
 alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
+# Restarts the MBP touchbar server when the escape key disappears :facepalm:
+alias esc="sudo pkill TouchBarServer"
 
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
-
-# eval "$(rbenv init -)"
+export PATH="/usr/local/opt/mongodb@3.6/bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH:/Users/ryanpoe/Downloads/google-cloud-sdk/bin"
 
 export NVM_DIR="$HOME/.nvm"
-# This loads nvm
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# This loads nvm bash_completion
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # Add tab completion for many Bash commands
@@ -58,7 +55,7 @@ LP_PATH_KEEP=2
 LP_PATH_LENGTH=20
 LP_USER_ALWAYS=0
 LP_ENABLE_LOAD=0
-[[ $- = *i* ]] && source ~/liquidprompt/liquidprompt
-export PATH="/usr/local/opt/mongodb@3.6/bin:$PATH"
+[[ $- = *i* ]] && source ~/liquidprompt
 
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+# Load environment secrets if they're specified
+[[ -f ".secrets" ]] && source ".secrets"

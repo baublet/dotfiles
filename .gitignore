@@ -4,12 +4,7 @@
 !.gitconfig
 !.gitexcludes
 !liquidprompt
-!liquidprompt/liquid.ps1
-!liquidprompt/liquid.theme
-!liquidprompt/liquidprompt
-!liquidprompt/liquidprompt.plugin.zsh
-!liquidprompt/liquidpromptrc-dist
-!liquidprompt/pmset-simulator
 !git-completion.bash
 !git-prompt.sh
 !iterm/com.googlecode.iterm2.plist
+!.secrets.example

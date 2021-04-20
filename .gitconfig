@@ -20,4 +20,4 @@
   changed = green
   untracked = cyan
 [core]
-	excludesfile = /home/baublet/.gitexcludes
+	excludesfile = /Users/ryanpoe/.gitexcludes
