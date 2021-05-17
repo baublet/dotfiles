@@ -3,8 +3,8 @@
 !.gitignore
 !.gitconfig
 !.gitexcludes
-!liquidprompt
-!git-completion.bash
-!git-prompt.sh
+!.liquidprompt
+!.git-completion.bash
+!.git-prompt.sh
 !iterm/com.googlecode.iterm2.plist
 !.secrets.example

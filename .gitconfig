@@ -20,4 +20,4 @@
   changed = green
   untracked = cyan
 [core]
-	excludesfile = /Users/ryanpoe/.gitexcludes
+	excludesfile = /home/coder/.gitexcludes
