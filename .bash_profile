@@ -39,12 +39,12 @@ elif [ -f /etc/bash_completion ]; then
 fi
 
 # Enable tab completion for `g` by marking it as an alias for `git`
-if type _git &>/dev/null && [ -f ~/git-completion.bash ]; then
+if type _git &>/dev/null && [ -f ~/.git-completion.bash ]; then
   complete -o default -o nospace -F _git g
 fi
 
-source ~/git-completion.bash
-source ~/git-prompt.sh
+source ~/.git-completion.bash
+source ~/.git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=true
 export GIT_PS1_SHOWCOLORHINTS=true
 
@@ -55,7 +55,7 @@ LP_PATH_KEEP=2
 LP_PATH_LENGTH=20
 LP_USER_ALWAYS=0
 LP_ENABLE_LOAD=0
-[[ $- = *i* ]] && source ~/liquidprompt
+[[ $- = *i* ]] && source ~/.liquidprompt
 
 # Load environment secrets if they're specified
 [[ -f ".secrets" ]] && source ".secrets"
