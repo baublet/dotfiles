@@ -1,3 +1,5 @@
+DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 if typeset -f zsh >/dev/null; then
   export SHELL="/bin/zsh"
 else
@@ -39,12 +41,12 @@ elif [ -f /etc/bash_completion ]; then
 fi
 
 # Enable tab completion for `g` by marking it as an alias for `git`
-if type _git &>/dev/null && [ -f ~/.git-completion.bash ]; then
+if type _git &>/dev/null && [ -f $DIR/.git-completion.bash ]; then
   complete -o default -o nospace -F _git g
 fi
 
-source ~/.git-completion.bash
-source ~/.git-prompt.sh
+source $DIR/.git-completion.bash
+source $DIR/.git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=true
 export GIT_PS1_SHOWCOLORHINTS=true
 
@@ -53,9 +55,10 @@ git config --global core.excludesfile ~/.gitexcludes
 # Only load Liquid Prompt in interactive shells, not from a script or from scp
 LP_PATH_KEEP=2
 LP_PATH_LENGTH=20
-LP_USER_ALWAYS=0
+LP_USER_ALWAYS=1
 LP_ENABLE_LOAD=0
-[[ $- = *i* ]] && source ~/.liquidprompt
+LP_HOSTNAME_ALWAYS=-1
+[[ $- = *i* ]] && source $DIR/.liquidprompt
 
 # Load environment secrets if they're specified
-[[ -f ".secrets" ]] && source ".secrets"
+[[ -f "$DIR/.secrets" ]] && source "$DIR/.secrets"
