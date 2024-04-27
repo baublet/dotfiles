@@ -24,7 +24,7 @@ alias rebase="git checkout master && git pull && git checkout @{-1} && git rebas
 # Squashes all commits on the current branch into one commit (only works if "master" is your main branch)
 alias squash="git reset \$(git merge-base master \$(git rev-parse --abbrev-ref HEAD))"
 # Commits everything without verifications and pushes it (for a quick "crap, I need to switch branches!")
-alias wip="git add . && git commit -am 'wip' && git push"
+alias wip="git add . && git commit -am 'wip'; git push"
 
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
