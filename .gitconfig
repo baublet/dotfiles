@@ -1,4 +1,3 @@
-# This is Git's per-user configuration file.
 [user]
   name = Ryan Poe
   email = baublet@gmail.com
@@ -20,4 +19,6 @@
   changed = green
   untracked = cyan
 [core]
-	excludesfile = /home/coder/.gitexcludes
+  excludesfile = ~/.gitexcludes
+[push]
+  autoSetupRemote = true

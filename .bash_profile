@@ -8,21 +8,23 @@ fi
 
 export BASH_SILENCE_DEPRECATION_WARNING=1
 
+# Handy aliases
+alias ..="cd .."
+alias ...="cd ../.."
+
 # Git aliases
 alias gs="git status"
 alias gp="git pull"
 alias mp="git checkout master && git pull"
 alias gc="git add . && git stash"
 alias gco="git commit --no-verify"
-alias gip="git push --no-verify"
+alias gip="git push"
 # Rebases the current branch with master (only works if "master" is a branch that exists)
 alias rebase="git checkout master && git pull && git checkout @{-1} && git rebase master"
 # Squashes all commits on the current branch into one commit (only works if "master" is your main branch)
 alias squash="git reset \$(git merge-base master \$(git rev-parse --abbrev-ref HEAD))"
-
-alias flushdns="dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
-# Restarts the MBP touchbar server when the escape key disappears :facepalm:
-alias esc="sudo pkill TouchBarServer"
+# Commits everything without verifications and pushes it (for a quick "crap, I need to switch branches!")
+alias wip="git add . && git commit -am 'wip' && git push"
 
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
@@ -50,7 +52,13 @@ source $DIR/.git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=true
 export GIT_PS1_SHOWCOLORHINTS=true
 
-git config --global core.excludesfile ~/.gitexcludes
+## Note: these are set in `.gitexcludes`, but copied here for visibility. Avoid
+## putting these here. It makes your terminals start slower.
+
+# Global git includes
+# git config --global core.excludesfile ~/.gitexcludes
+# Automatically push remote branches to origin
+# git config --global --add --bool push.autoSetupRemote true 
 
 # Only load Liquid Prompt in interactive shells, not from a script or from scp
 LP_PATH_KEEP=2
