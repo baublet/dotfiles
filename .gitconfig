@@ -22,3 +22,4 @@
   excludesfile = ~/.gitexcludes
 [push]
   autoSetupRemote = true
+  default = current
