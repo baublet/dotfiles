@@ -58,9 +58,9 @@ export GIT_PS1_SHOWCOLORHINTS=true
 # Global git includes
 # git config --global core.excludesfile ~/.gitexcludes
 # Automatically push remote branches to origin
-git config --global --add --bool push.autoSetupRemote true
-git config --global user.email "baublet@gmail.com"
-git config --global user.name "Ryan Poe"
+# git config --global --add --bool push.autoSetupRemote true
+# git config --global user.email "baublet@gmail.com"
+# git config --global user.name "Ryan Poe"
 
 # Only load Liquid Prompt in interactive shells, not from a script or from scp
 LP_PATH_KEEP=2
