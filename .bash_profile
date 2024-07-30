@@ -52,16 +52,6 @@ source $DIR/.git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=true
 export GIT_PS1_SHOWCOLORHINTS=true
 
-## Note: these are set in `.gitexcludes`, but copied here for visibility. Avoid
-## putting these here. It makes your terminals start slower.
-
-# Global git includes
-# git config --global core.excludesfile ~/.gitexcludes
-# Automatically push remote branches to origin
-# git config --global --add --bool push.autoSetupRemote true
-# git config --global user.email "baublet@gmail.com"
-# git config --global user.name "Ryan Poe"
-
 # Only load Liquid Prompt in interactive shells, not from a script or from scp
 LP_PATH_KEEP=2
 LP_PATH_LENGTH=20
