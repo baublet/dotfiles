@@ -11,6 +11,8 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 # Handy aliases
 alias ..="cd .."
 alias ...="cd ../.."
+alias ....="cd ../../.."
+alias ac="claude --dangerously-skip-permissions"
 
 # Git aliases
 alias gs="git status"
