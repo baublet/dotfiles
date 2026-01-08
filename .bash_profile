@@ -12,7 +12,7 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
-alias ac="claude --dangerously-skip-permissions"
+alias ac="npx -y @anthropic-ai/claude-code@latest --dangerously-skip-permissions"
 
 # Git aliases
 alias gs="git status"
