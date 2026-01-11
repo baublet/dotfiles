@@ -28,6 +28,7 @@ alias rebase="git checkout \$(mainBranchName) && git pull && git checkout @{-1} 
 alias squash="git reset \$(git merge-base \$(mainBranchName) \$(git rev-parse --abbrev-ref HEAD))"
 # Commits everything without verifications and pushes it (for a quick "crap, I need to switch branches!")
 alias wip="git add . && git commit -am 'wip'; git push"
+alias pnpx="pnpm dlx"
 
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/openssl/bin:$PATH"
