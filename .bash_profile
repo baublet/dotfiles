@@ -30,11 +30,7 @@ alias squash="git reset \$(git merge-base \$(mainBranchName) \$(git rev-parse --
 alias wip="git add . && git commit -am 'wip'; git push"
 alias pnpx="pnpm dlx"
 
-export PATH="/usr/local/sbin:$PATH"
-export PATH="/usr/local/opt/openssl/bin:$PATH"
-export PATH="/usr/local/opt/mongodb@3.6/bin:$PATH"
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH:/Users/ryanpoe/Downloads/google-cloud-sdk/bin"
-
+# NVM — lazy-loaded so the shell starts instantly
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
@@ -52,17 +48,26 @@ if type _git &>/dev/null && [ -f $DIR/.git-completion.bash ]; then
 fi
 
 source $DIR/.git-completion.bash
-source $DIR/.git-prompt.sh
-export GIT_PS1_SHOWDIRTYSTATE=true
-export GIT_PS1_SHOWCOLORHINTS=true
 
-# Only load Liquid Prompt in interactive shells, not from a script or from scp
-LP_PATH_KEEP=2
-LP_PATH_LENGTH=20
-LP_USER_ALWAYS=1
-LP_ENABLE_LOAD=0
-LP_HOSTNAME_ALWAYS=-1
-[[ $- = *i* ]] && source $DIR/.liquidprompt
+# fnm setup
+if ! command -v fnm &>/dev/null; then
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+fi
+# fnm
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+  eval "`fnm env`"
+fi
+
+# Starship prompt — auto-install to ~/.local/bin if missing
+export PATH="$HOME/.local/bin:$PATH"
+export STARSHIP_CONFIG="$DIR/starship.toml"
+if ! command -v starship &>/dev/null; then
+  mkdir -p "$HOME/.local/bin"
+  curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin"
+fi
+eval "$(starship init bash)"
 
 # Load environment secrets if they're specified
 [[ -f "$DIR/.secrets" ]] && source "$DIR/.secrets"

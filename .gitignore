@@ -3,9 +3,9 @@
 !.gitignore
 !.gitconfig
 !.gitexcludes
-!.liquidprompt
 !.git-completion.bash
-!.git-prompt.sh
+!starship.toml
+!CLAUDE.md
 !iterm/com.googlecode.iterm2.plist
 !.secrets.example
 !.bash_aliases
