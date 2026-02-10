@@ -102,13 +102,10 @@ if [ -d "$HOME/kazoo-web/.git" ]; then
   echo "✓ kazoo-web already cloned"
 else
   echo "→ Cloning kazoo-web..."
-  if [ -z "${GITHUB_TOKEN:-}" ]; then
-    echo "⚠ GITHUB_TOKEN is not set. Set it and re-run, e.g.:"
-    echo "  export GITHUB_TOKEN=ghp_..."
-    echo "  ~/dotfiles/setup.sh"
-  else
-    git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/KazooHR/kazoo-web.git" "$HOME/kazoo-web"
+  if [ -n "${GIT_SSH_COMMAND:-}" ]; then
+    echo "  (using Coder SSH key)"
   fi
+  git clone "git@github.com:KazooHR/kazoo-web.git" "$HOME/kazoo-web"
 fi
 
 # Install Node via fnm if kazoo-web has a .node-version
