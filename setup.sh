@@ -19,7 +19,14 @@
 #   git add -A && git commit -m "update setup script"
 #   git push
 #
-set -euo pipefail
+set -uo pipefail
+
+WARNINGS=()
+
+warn() {
+  echo "⚠ $1"
+  WARNINGS+=("$1")
+}
 
 echo "=== Dev Environment Setup ==="
 echo "Time: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -57,9 +64,12 @@ if command -v fnm &>/dev/null; then
   echo "✓ fnm already installed"
 else
   echo "→ Installing fnm..."
-  curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
-  export PATH="$HOME/.local/share/fnm:$PATH"
-  eval "$(fnm env)"
+  if curl -fsSL https://fnm.vercel.app/install | bash; then
+    export PATH="$HOME/.local/share/fnm:$PATH"
+    eval "$(fnm env)"
+  else
+    warn "fnm install failed (site may be down). Install later: curl -fsSL https://fnm.vercel.app/install | bash"
+  fi
 fi
 
 # ── jq ────────────────────────────────────────────────────────────────────────
@@ -69,11 +79,11 @@ if command -v jq &>/dev/null; then
 else
   echo "→ Installing jq..."
   if command -v apt-get &>/dev/null; then
-    sudo apt-get update -qq && sudo apt-get install -y -qq jq
+    sudo apt-get update -qq && sudo apt-get install -y -qq jq || warn "jq install via apt failed"
   elif command -v brew &>/dev/null; then
-    brew install jq
+    brew install jq || warn "jq install via brew failed"
   else
-    echo "⚠ Could not install jq — no apt-get or brew found. Install manually."
+    warn "Could not install jq — no apt-get or brew found. Install manually."
   fi
 fi
 
@@ -83,7 +93,7 @@ if command -v claude &>/dev/null; then
   echo "✓ Claude Code already installed"
 else
   echo "→ Installing Claude Code..."
-  npm install -g @anthropic-ai/claude-code
+  npm install -g @anthropic-ai/claude-code || warn "Claude Code install failed. Install later: npm install -g @anthropic-ai/claude-code"
 fi
 
 # ── kazoo-web ─────────────────────────────────────────────────────────────────
@@ -100,17 +110,26 @@ else
 fi
 
 # Install Node via fnm if kazoo-web has a .node-version
-if [ -f "$HOME/kazoo-web/.node-version" ]; then
+if command -v fnm &>/dev/null && [ -f "$HOME/kazoo-web/.node-version" ]; then
   NODE_VERSION=$(cat "$HOME/kazoo-web/.node-version")
   echo "→ Ensuring Node $NODE_VERSION is installed..."
-  fnm install "$NODE_VERSION"
-  fnm use "$NODE_VERSION"
+  fnm install "$NODE_VERSION" || warn "fnm install Node $NODE_VERSION failed"
+  fnm use "$NODE_VERSION" 2>/dev/null || true
 fi
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 
 echo ""
-echo "=== Setup complete! ==="
+if [ ${#WARNINGS[@]} -gt 0 ]; then
+  echo "=== Setup complete (with warnings) ==="
+  echo ""
+  for w in "${WARNINGS[@]}"; do
+    echo "  ⚠ $w"
+  done
+  echo ""
+else
+  echo "=== Setup complete! ==="
+fi
 echo ""
 echo "Next steps:"
 echo "  1. source ~/.bashrc"
