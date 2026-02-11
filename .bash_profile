@@ -12,6 +12,7 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
+unalias ac 2>/dev/null
 ac() {
   if ! command -v claude &>/dev/null; then
     curl -fsSL https://claude.ai/install.sh | bash
