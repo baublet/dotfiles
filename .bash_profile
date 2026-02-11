@@ -12,7 +12,12 @@ export BASH_SILENCE_DEPRECATION_WARNING=1
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
-alias ac="npx -y @anthropic-ai/claude-code@latest --dangerously-skip-permissions"
+ac() {
+  if ! command -v claude &>/dev/null; then
+    curl -fsSL https://claude.ai/install.sh | bash
+  fi
+  claude --dangerously-skip-permissions "$@"
+}
 
 # Git aliases
 alias gs="git status"
