@@ -59,7 +59,7 @@ fi
 FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
-  eval "$(fnm env)"
+  eval "$(fnm env --shell bash)"
 fi
 if ! command -v fnm &>/dev/null; then
   curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
