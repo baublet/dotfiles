@@ -55,15 +55,15 @@ fi
 
 source $DIR/.git-completion.bash
 
-# fnm setup
-if ! command -v fnm &>/dev/null; then
-  curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
-fi
 # fnm
 FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
-  eval "`fnm env`"
+  eval "$(fnm env)"
+fi
+if ! command -v fnm &>/dev/null; then
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+  [ -d "$FNM_PATH" ] && export PATH="$FNM_PATH:$PATH" && eval "$(fnm env)"
 fi
 
 # Starship prompt — auto-install to ~/.local/bin if missing
