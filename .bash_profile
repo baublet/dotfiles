@@ -53,7 +53,7 @@ if type _git &>/dev/null && [ -f $DIR/.git-completion.bash ]; then
   complete -o default -o nospace -F _git g
 fi
 
-[ -f "$DIR/.git-completion.bash" ] && source "$DIR/.git-completion.bash"
+source $DIR/.git-completion.bash
 
 # fnm
 FNM_PATH="$HOME/.local/share/fnm"
@@ -61,13 +61,19 @@ if [ -d "$FNM_PATH" ]; then
   export PATH="$FNM_PATH:$PATH"
   eval "$(fnm env)"
 fi
+if ! command -v fnm &>/dev/null; then
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+  [ -d "$FNM_PATH" ] && export PATH="$FNM_PATH:$PATH" && eval "$(fnm env)"
+fi
 
-# Starship prompt
+# Starship prompt — auto-install to ~/.local/bin if missing
 export PATH="$HOME/.local/bin:$PATH"
 export STARSHIP_CONFIG="$DIR/starship.toml"
-if command -v starship &>/dev/null; then
-  eval "$(starship init bash)"
+if ! command -v starship &>/dev/null; then
+  mkdir -p "$HOME/.local/bin"
+  curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin"
 fi
+eval "$(starship init bash)"
 
 # Load environment secrets if they're specified
 [[ -f "$DIR/.secrets" ]] && source "$DIR/.secrets"
