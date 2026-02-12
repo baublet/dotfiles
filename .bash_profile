@@ -53,7 +53,7 @@ if type _git &>/dev/null && [ -f $DIR/.git-completion.bash ]; then
   complete -o default -o nospace -F _git g
 fi
 
-source $DIR/.git-completion.bash
+[ -f "$DIR/.git-completion.bash" ] && source "$DIR/.git-completion.bash"
 
 # fnm
 FNM_PATH="$HOME/.local/share/fnm"
