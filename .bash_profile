@@ -83,6 +83,9 @@ if [[ $- == *i* ]]; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin" >/dev/null 2>&1
   fi
   eval "$(starship init bash)"
+
+  # Auto-update dotfiles in the background
+  (cd "$DIR" && git pull --ff-only &>/dev/null &)
 fi
 
 # Load environment secrets if they're specified
