@@ -85,7 +85,7 @@ if [[ $- == *i* ]]; then
   eval "$(starship init bash)"
 
   # Auto-update dotfiles in the background
-  (cd "$DIR" && git pull --ff-only &>/dev/null &)
+  GIT_TERMINAL_PROMPT=0 git -C "$DIR" pull --ff-only </dev/null >/dev/null 2>&1 &
 fi
 
 # Load environment secrets if they're specified
