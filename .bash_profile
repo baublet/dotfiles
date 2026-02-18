@@ -82,10 +82,12 @@ if [[ $- == *i* ]]; then
     mkdir -p "$HOME/.local/bin"
     curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin" >/dev/null 2>&1
   fi
-  eval "$(starship init bash)"
+  if ! type starship_precmd &>/dev/null; then
+    eval "$(starship init bash)"
+  fi
 
   # Auto-update dotfiles in the background
-  GIT_TERMINAL_PROMPT=0 git -C "$DIR" pull --ff-only </dev/null >/dev/null 2>&1 &
+  GIT_TERMINAL_PROMPT=0 git -C "$DIR" pull --ff-only </dev/null >/dev/null 2>&1 & disown
 fi
 
 # Load environment secrets if they're specified
