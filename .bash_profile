@@ -21,7 +21,7 @@ ac() {
 }
 unalias gh 2>/dev/null
 gh() {
-  if ! command -v gh &>/dev/null; then
+  if ! command gh --version &>/dev/null; then
     curl -sS https://webi.sh/gh | bash
   fi
   command gh "$@"
