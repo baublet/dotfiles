@@ -19,6 +19,13 @@ ac() {
   fi
   claude --dangerously-skip-permissions "$@"
 }
+unalias gh 2>/dev/null
+gh() {
+  if ! command -v gh &>/dev/null; then
+    curl -sS https://webi.sh/gh | bash
+  fi
+  command gh "$@"
+}
 
 # Git aliases
 alias gs="git status"
