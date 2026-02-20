@@ -109,7 +109,7 @@ if [[ $- == *i* ]]; then
         cargo install --git https://github.com/rtk-ai/rtk
         rm -f "$RTK_LOCK"
         if [ ! -f "$HOME/.rtk-init.done" ]; then
-          "$HOME/.cargo/bin/rtk" init --global
+          "$HOME/.cargo/bin/rtk" init --global --auto-patch
           touch "$HOME/.rtk-init.done"
         fi
       ) </dev/null >/dev/null 2>&1 & disown
