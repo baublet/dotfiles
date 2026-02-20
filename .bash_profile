@@ -26,7 +26,6 @@ gh() {
   fi
   command gh "$@"
 }
-
 # Git aliases
 alias gs="git status"
 alias gp="git pull"
@@ -88,6 +87,35 @@ if [[ $- == *i* ]]; then
 
   # Auto-update dotfiles in the background
   GIT_TERMINAL_PROMPT=0 git -C "$DIR" pull --ff-only </dev/null >/dev/null 2>&1 & disown
+
+  # Auto-install RTK (from source) in the background
+  if ! command -v rtk &>/dev/null; then
+    RTK_LOCK="$HOME/.rtk-install.lock"
+    RTK_STALE=false
+    if [ -f "$RTK_LOCK" ]; then
+      RTK_LOCK_TIME=$(cat "$RTK_LOCK" 2>/dev/null)
+      RTK_NOW=$(date +%s)
+      if [ $(( RTK_NOW - RTK_LOCK_TIME )) -gt 600 ]; then
+        RTK_STALE=true
+      fi
+    fi
+    if [ ! -f "$RTK_LOCK" ] || [ "$RTK_STALE" = true ]; then
+      (
+        date +%s > "$RTK_LOCK"
+        if ! command -v cargo &>/dev/null; then
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          . "$HOME/.cargo/env"
+        fi
+        cargo install --git https://github.com/rtk-ai/rtk
+        rm -f "$RTK_LOCK"
+        if [ ! -f "$HOME/.rtk-init.done" ]; then
+          "$HOME/.cargo/bin/rtk" init --global
+          touch "$HOME/.rtk-init.done"
+        fi
+      ) </dev/null >/dev/null 2>&1 & disown
+    fi
+    unset RTK_LOCK RTK_LOCK_TIME RTK_NOW RTK_STALE
+  fi
 fi
 
 # Load environment secrets if they're specified
