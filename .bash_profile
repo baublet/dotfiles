@@ -116,6 +116,14 @@ if [[ $- == *i* ]]; then
     fi
     unset RTK_LOCK RTK_LOCK_TIME RTK_NOW RTK_STALE
   fi
+
+  # RTK hook needs real jq — remove Node.js imposter and install system jq
+  if command -v jq &>/dev/null && jq --version 2>&1 | grep -q 'Cannot find module'; then
+    npm uninstall -g jq >/dev/null 2>&1
+  fi
+  if ! command -v jq &>/dev/null; then
+    sudo apt-get install -y -qq jq >/dev/null 2>&1 & disown
+  fi
 fi
 
 # Load environment secrets if they're specified
