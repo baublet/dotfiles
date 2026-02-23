@@ -19,6 +19,13 @@ ac() {
   fi
   claude --dangerously-skip-permissions "$@"
 }
+unalias dc 2>/dev/null
+dc() {
+  if ! command -v opencode &>/dev/null; then
+    curl -fsSL https://opencode.ai/install | bash
+  fi
+  OPENCODE_CONFIG_CONTENT='{"permission":"allow"}' opencode "$@"
+}
 unalias gh 2>/dev/null
 gh() {
   if ! command gh --version &>/dev/null; then
