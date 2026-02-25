@@ -23,6 +23,7 @@ unalias dc 2>/dev/null
 dc() {
   if ! command -v opencode &>/dev/null; then
     curl -fsSL https://opencode.ai/install | bash
+    export PATH="$HOME/.opencode/bin:$PATH"
   fi
   OPENCODE_CONFIG_CONTENT='{"permission":"allow"}' opencode "$@"
 }
