@@ -25,6 +25,8 @@ dc() {
     curl -fsSL https://opencode.ai/install | bash
     export PATH="$HOME/.opencode/bin:$PATH"
   fi
+  GOOGLE_VERTEX_LOCATION="${GOOGLE_VERTEX_LOCATION:-global}" \
+  GOOGLE_VERTEX_PROJECT="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}" \
   OPENCODE_CONFIG_CONTENT='{"permission":"allow"}' opencode "$@"
 }
 unalias gh 2>/dev/null
