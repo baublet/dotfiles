@@ -95,8 +95,10 @@ if [[ $- == *i* ]]; then
     eval "$(starship init bash)"
   fi
 
+  # Background maintenance uses setsid so there is no controlling tty (/dev/tty prompts).
+
   # Auto-update dotfiles in the background
-  GIT_TERMINAL_PROMPT=0 git -C "$DIR" pull --ff-only </dev/null >/dev/null 2>&1 & disown
+  setsid env GIT_TERMINAL_PROMPT=0 git -C "$DIR" pull --ff-only </dev/null >/dev/null 2>&1 & disown
 
   # Auto-install RTK (from source) in the background
   if ! command -v rtk &>/dev/null; then
@@ -110,19 +112,20 @@ if [[ $- == *i* ]]; then
       fi
     fi
     if [ ! -f "$RTK_LOCK" ] || [ "$RTK_STALE" = true ]; then
-      (
-        date +%s > "$RTK_LOCK"
+      setsid bash -c "
+        RTK_LOCK=\"\$HOME/.rtk-install.lock\"
+        date +%s > \"\$RTK_LOCK\"
         if ! command -v cargo &>/dev/null; then
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          . "$HOME/.cargo/env"
+          . \"\$HOME/.cargo/env\"
         fi
         cargo install --git https://github.com/rtk-ai/rtk
-        rm -f "$RTK_LOCK"
-        if [ ! -f "$HOME/.rtk-init.done" ]; then
-          "$HOME/.cargo/bin/rtk" init --global --auto-patch
-          touch "$HOME/.rtk-init.done"
+        rm -f \"\$RTK_LOCK\"
+        if [ ! -f \"\$HOME/.rtk-init.done\" ]; then
+          \"\$HOME/.cargo/bin/rtk\" init --global --auto-patch
+          touch \"\$HOME/.rtk-init.done\"
         fi
-      ) </dev/null >/dev/null 2>&1 & disown
+      " </dev/null >/dev/null 2>&1 & disown
     fi
     unset RTK_LOCK RTK_LOCK_TIME RTK_NOW RTK_STALE
   fi
@@ -132,7 +135,7 @@ if [[ $- == *i* ]]; then
     npm uninstall -g jq >/dev/null 2>&1
   fi
   if ! command -v jq &>/dev/null; then
-    sudo apt-get install -y -qq jq >/dev/null 2>&1 & disown
+    setsid env DEBIAN_FRONTEND=noninteractive sudo apt-get install -y -qq jq </dev/null >/dev/null 2>&1 & disown
   fi
 fi
 
