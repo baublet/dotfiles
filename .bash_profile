@@ -17,7 +17,13 @@ ac() {
   if ! command -v claude &>/dev/null; then
     curl -fsSL https://claude.ai/install.sh | bash
   fi
-  claude --dangerously-skip-permissions "$@"
+  local extra=()
+  if [ -d "$HOME/wt-tooling" ]; then
+    extra=(--add-dir "$HOME/wt-tooling")
+  elif git clone https://github.com/KazooHR/wt-tooling "$HOME/wt-tooling" 2>/dev/null; then
+    extra=(--add-dir "$HOME/wt-tooling")
+  fi
+  claude --dangerously-skip-permissions "${extra[@]}" "$@"
 }
 unalias dc 2>/dev/null
 dc() {
