@@ -44,6 +44,31 @@ sc() {
     curl -fsSL https://maki.sh/install.sh | MAKI_INSTALL_DIR="$HOME/.local/bin" sh
     export PATH="$HOME/.local/bin:$PATH"
   fi
+  if ! command -v maki &>/dev/null; then
+    echo "sc: 'maki' isn't installed and the auto-install failed." >&2
+    echo "  Install it manually:  curl -fsSL https://maki.sh/install.sh | sh" >&2
+    echo "  Docs:                 https://maki.sh/docs/" >&2
+    return 1
+  fi
+  # The Vertex provider mints a token from gcloud/ADC — no API key needed. Check the
+  # prerequisites up front and tell the user exactly how to get whatever's missing.
+  if ! command -v gcloud &>/dev/null; then
+    echo "sc: needs the Google Cloud CLI ('gcloud'), which isn't installed." >&2
+    echo "  Install it:  curl https://sdk.cloud.google.com | bash && exec -l \"\$SHELL\"" >&2
+    echo "  Or see:      https://cloud.google.com/sdk/docs/install" >&2
+    echo "  Then run:    gcloud auth application-default login" >&2
+    return 1
+  fi
+  # Cheap, network-free credential check (mirrors what the provider actually uses):
+  # an explicit service-account JSON, an ADC file, or any active gcloud account.
+  if [ -z "${GOOGLE_APPLICATION_CREDENTIALS:-}" ] \
+     && [ ! -f "$HOME/.config/gcloud/application_default_credentials.json" ] \
+     && ! gcloud auth list --filter=status:ACTIVE --format="value(account)" 2>/dev/null | grep -q .; then
+    echo "sc: no Google Cloud credentials found for Vertex." >&2
+    echo "  Sign in:  gcloud auth application-default login" >&2
+    echo "  Or use a service-account key:  export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json" >&2
+    return 1
+  fi
   # Link the Vertex (Gemini) dynamic provider so no API key is needed — it mints a
   # short-lived token from gcloud/ADC. Re-link each run so repo updates take effect.
   mkdir -p "$HOME/.config/maki/providers"
