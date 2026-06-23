@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Maki dynamic provider: Google Vertex AI (Gemini) via the OpenAI-compatible endpoint.
+#
+# Auth uses Application Default Credentials (ADC) — no API key required. It honors
+# GOOGLE_APPLICATION_CREDENTIALS (a service-account JSON) when set, otherwise the
+# credentials from `gcloud auth application-default login`. A short-lived OAuth token
+# is minted on every `resolve`, so token expiry is handled transparently.
+#
+# Configure project/region via the same env vars the `dc` alias uses:
+#   GOOGLE_VERTEX_PROJECT  (default: kazoo-engineering)
+#   GOOGLE_VERTEX_LOCATION (default: global)
+set -euo pipefail
+
+PROJECT="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}"
+LOCATION="${GOOGLE_VERTEX_LOCATION:-global}"
+
+if [ "$LOCATION" = "global" ]; then
+  HOST="aiplatform.googleapis.com"
+else
+  HOST="${LOCATION}-aiplatform.googleapis.com"
+fi
+# Maki's `openai` base appends `/chat/completions` to this base_url.
+BASE_URL="https://${HOST}/v1beta1/projects/${PROJECT}/locations/${LOCATION}/endpoints/openapi"
+
+mint_token() {
+  command -v gcloud >/dev/null 2>&1 || return 1
+  gcloud auth application-default print-access-token 2>/dev/null \
+    || gcloud auth print-access-token 2>/dev/null
+}
+
+auth_hint() {
+  if ! command -v gcloud >/dev/null 2>&1; then
+    echo "vertex provider: 'gcloud' not found. Install the Google Cloud SDK." >&2
+  else
+    echo "vertex provider: no credentials. Run 'gcloud auth application-default login'." >&2
+  fi
+}
+
+case "${1:-}" in
+  info)
+    # Must stay well under Maki's ~5s discovery timeout, so do NO network here —
+    # just report whether gcloud exists. Token minting happens lazily in `resolve`.
+    if command -v gcloud >/dev/null 2>&1; then has_auth=true; else has_auth=false; fi
+    printf '{"display_name":"Vertex AI (Gemini)","base":"openai","has_auth":%s}\n' "$has_auth"
+    ;;
+  models)
+    # Vertex references Gemini models as `google/<model>` on the OpenAI endpoint.
+    cat <<'EOF'
+[
+  {"id":"google/gemini-3.5-flash","tier":"medium","context_window":1048576,"max_output_tokens":65536},
+  {"id":"google/gemini-2.5-flash","tier":"medium","context_window":1048576,"max_output_tokens":65536},
+  {"id":"google/gemini-2.5-pro","tier":"strong","context_window":1048576,"max_output_tokens":65536}
+]
+EOF
+    ;;
+  resolve|refresh)
+    token="$(mint_token)"
+    if [ -z "$token" ]; then
+      auth_hint
+      exit 1
+    fi
+    printf '{"base_url":"%s","headers":{"Authorization":"Bearer %s"}}\n' "$BASE_URL" "$token"
+    ;;
+  login)
+    gcloud auth application-default login
+    ;;
+  logout)
+    gcloud auth application-default revoke 2>/dev/null || true
+    ;;
+  *)
+    echo "vertex provider: unknown subcommand '${1:-}'" >&2
+    exit 1
+    ;;
+esac

@@ -35,6 +35,36 @@ dc() {
   GOOGLE_VERTEX_PROJECT="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}" \
   OPENCODE_CONFIG_CONTENT='{"permission":"allow"}' opencode "$@"
 }
+unalias sc 2>/dev/null
+sc() {
+  if ! command -v maki &>/dev/null; then
+    # Install into ~/.local/bin (already on PATH) so no sudo is needed — the
+    # installer's /usr/local/bin default would prompt for a password on fresh envs.
+    mkdir -p "$HOME/.local/bin"
+    curl -fsSL https://maki.sh/install.sh | MAKI_INSTALL_DIR="$HOME/.local/bin" sh
+    export PATH="$HOME/.local/bin:$PATH"
+  fi
+  # Link the Vertex (Gemini) dynamic provider so no API key is needed — it mints a
+  # short-lived token from gcloud/ADC. Re-link each run so repo updates take effect.
+  mkdir -p "$HOME/.config/maki/providers"
+  chmod +x "$DIR/maki/providers/vertex" 2>/dev/null
+  ln -sf "$DIR/maki/providers/vertex" "$HOME/.config/maki/providers/vertex"
+  # Seed a default config (Vertex Gemini 3.5 Flash, YOLO) on first run; user edits persist.
+  local cfg="$HOME/.config/maki/init.lua"
+  if [ ! -f "$cfg" ]; then
+    cat > "$cfg" <<'EOF'
+maki.setup({
+    always_yolo = true,
+    provider = {
+        default_model = "vertex/google/gemini-3.5-flash",
+    },
+})
+EOF
+  fi
+  GOOGLE_VERTEX_PROJECT="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}" \
+  GOOGLE_VERTEX_LOCATION="${GOOGLE_VERTEX_LOCATION:-global}" \
+  maki "$@"
+}
 unalias gh 2>/dev/null
 gh() {
   if ! command gh --version &>/dev/null; then
