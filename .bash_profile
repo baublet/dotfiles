@@ -74,24 +74,27 @@ sc() {
   mkdir -p "$HOME/.config/maki/providers"
   chmod +x "$DIR/maki/providers/vertex" 2>/dev/null
   ln -sf "$DIR/maki/providers/vertex" "$HOME/.config/maki/providers/vertex"
-  # Seed a default config (Vertex Gemini 3.5 Flash, YOLO) on first run; user edits persist.
+  # Seed a default config (Vertex Gemini 3.1 Flash Lite, YOLO) on first run; user edits persist.
   local cfg="$HOME/.config/maki/init.lua"
   if [ ! -f "$cfg" ]; then
     cat > "$cfg" <<'EOF'
 maki.setup({
     always_yolo = true,
     provider = {
-        default_model = "vertex/gemini-3.5-flash",
+        default_model = "vertex/gemini-3.1-flash-lite",
     },
 })
 EOF
   fi
-  # Heal stale model ids from the old OpenAI-compat naming (vertex/google/<m> ->
-  # vertex/<m>) so existing configs keep working after the native-endpoint switch.
+  # Heal previously-shipped defaults so existing configs keep working after pulls:
+  #   vertex/google/<m> -> vertex/<m>           (OpenAI-compat -> native naming)
+  #   vertex/gemini-3.5-flash -> 3.1-flash-lite (default model change)
   # Portable (no `sed -i`, which differs on macOS); only rewrites when needed.
-  if [ -f "$cfg" ] && grep -q 'vertex/google/' "$cfg" 2>/dev/null; then
+  if [ -f "$cfg" ] && grep -qE 'vertex/google/|vertex/gemini-3\.5-flash' "$cfg" 2>/dev/null; then
     local tmp
-    tmp=$(mktemp) && sed 's#vertex/google/#vertex/#g' "$cfg" > "$tmp" && mv "$tmp" "$cfg"
+    tmp=$(mktemp) && sed -e 's#vertex/google/#vertex/#g' \
+                        -e 's#vertex/gemini-3\.5-flash#vertex/gemini-3.1-flash-lite#g' \
+                        "$cfg" > "$tmp" && mv "$tmp" "$cfg"
   fi
   local proj="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}"
   local loc="${GOOGLE_VERTEX_LOCATION:-global}"
@@ -113,6 +116,9 @@ EOF
     rm -f "$portfile"
     if [ -n "$proxy_port" ]; then
       export VERTEX_PROXY_PORT="$proxy_port"
+      # Expose the live port so the running proxy can be health-checked:
+      #   curl -s 127.0.0.1:$(cat ~/.cache/maki-vertex-proxy-port)/__health
+      mkdir -p "$HOME/.cache" && echo "$proxy_port" > "$HOME/.cache/maki-vertex-proxy-port"
     else
       kill "$proxy_pid" 2>/dev/null; proxy_pid=""
       echo "sc: signature proxy failed to start; Gemini 3.x tool calls may error." >&2
@@ -126,6 +132,7 @@ EOF
   local rc=$?
 
   [ -n "$proxy_pid" ] && kill "$proxy_pid" 2>/dev/null
+  rm -f "$HOME/.cache/maki-vertex-proxy-port"
   unset VERTEX_PROXY_PORT
   return $rc
 }

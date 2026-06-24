@@ -56,6 +56,7 @@ case "${1:-}" in
     # `/models/<id>:streamGenerateContent`).
     cat <<'EOF'
 [
+  {"id":"gemini-3.1-flash-lite","tier":"weak","context_window":1048576,"max_output_tokens":65536},
   {"id":"gemini-3.5-flash","tier":"medium","context_window":1048576,"max_output_tokens":65536},
   {"id":"gemini-2.5-flash","tier":"medium","context_window":1048576,"max_output_tokens":65536},
   {"id":"gemini-2.5-pro","tier":"strong","context_window":1048576,"max_output_tokens":65536}

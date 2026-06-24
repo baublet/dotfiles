@@ -22,6 +22,9 @@
 const http = require('http');
 const https = require('https');
 
+// Bump on every behavior change so a running proxy can be checked against the repo.
+const VERSION = '1.0.0';
+
 const LOCATION = process.env.GOOGLE_VERTEX_LOCATION || 'global';
 const HOST = LOCATION === 'global'
   ? 'aiplatform.googleapis.com'
@@ -99,12 +102,25 @@ function captureFromSse(text) {
 }
 
 const server = http.createServer((req, res) => {
+  // Liveness/version probe — `curl http://127.0.0.1:<port>/__health`.
+  if ((req.url || '').split('?')[0] === '/__health') {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({
+      ok: true,
+      version: VERSION,
+      host: HOST,
+      location: LOCATION,
+      cachedSignatures: sigCache.size,
+    }));
+    return;
+  }
+
   // Maki's google base probes `{base}/models` to list models, but Vertex has no
   // such path and returns a 404 HTML page (a noisy "API error 404"). The dynamic
   // provider already supplies the model catalog, so answer the probe ourselves.
   const pathNoQuery = (req.url || '').split('?')[0];
   if (req.method === 'GET' && /\/models$/.test(pathNoQuery)) {
-    const models = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-pro'].map((id) => ({
+    const models = ['gemini-3.1-flash-lite', 'gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-pro'].map((id) => ({
       name: 'models/' + id,
       supportedGenerationMethods: ['generateContent', 'streamGenerateContent'],
     }));
@@ -158,7 +174,28 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const port = parseInt(process.argv[2] || '0', 10);
+// CLI modes for verifying the proxy without launching a server.
+const arg = process.argv[2] || '';
+if (arg === '--version' || arg === 'version') {
+  console.log(VERSION);
+  process.exit(0);
+}
+if (arg === '--selftest') {
+  // Prove the capture+inject round-trip with canned data — no network needed.
+  const sig = 'TEST_SIGNATURE_ABC';
+  captureFromJson(JSON.stringify({
+    candidates: [{ content: { parts: [{ functionCall: { name: 'get_weather', args: { city: 'Paris' } }, thoughtSignature: sig }] } }],
+  }));
+  const out = inject(Buffer.from(JSON.stringify({
+    contents: [{ role: 'model', parts: [{ functionCall: { name: 'get_weather', args: { city: 'Paris' } } }] }],
+  })));
+  const injected = JSON.parse(out.toString('utf8')).contents[0].parts[0].thoughtSignature;
+  const pass = injected === sig;
+  console.log(`vertex-proxy v${VERSION} selftest: ${pass ? 'PASS' : 'FAIL'} (signature ${pass ? 'captured + re-injected' : 'NOT round-tripped'})`);
+  process.exit(pass ? 0 : 1);
+}
+
+const port = parseInt(arg || '0', 10);
 server.listen(port, '127.0.0.1', () => {
   // Print the actual port once listening; sc reads this and knows we're ready.
   console.log(server.address().port);
