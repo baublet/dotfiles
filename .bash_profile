@@ -93,22 +93,25 @@ EOF
   # call, which Maki doesn't carry across turns. Run a tiny local proxy that caches
   # and re-injects those signatures so tool use works. Scoped to this session.
   local proxy_pid=""
-  if command -v python3 &>/dev/null; then
-    local proxy_port
-    proxy_port=$(python3 -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1]);s.close()' 2>/dev/null)
+  if command -v node &>/dev/null; then
+    local portfile proxy_port="" tries=0
+    portfile=$(mktemp)
+    GOOGLE_VERTEX_LOCATION="$loc" node "$DIR/maki/providers/vertex-proxy.js" >"$portfile" 2>/dev/null &
+    proxy_pid=$!
+    # The proxy prints its port once it's listening, so reading it == ready.
+    while [ -z "$proxy_port" ] && [ "$tries" -lt 100 ]; do
+      proxy_port=$(head -n1 "$portfile" 2>/dev/null)
+      [ -z "$proxy_port" ] && { sleep 0.05; tries=$((tries + 1)); }
+    done
+    rm -f "$portfile"
     if [ -n "$proxy_port" ]; then
-      GOOGLE_VERTEX_LOCATION="$loc" python3 "$DIR/maki/providers/vertex-proxy.py" "$proxy_port" >/dev/null 2>&1 &
-      proxy_pid=$!
       export VERTEX_PROXY_PORT="$proxy_port"
-      # Block until the proxy accepts connections (avoids a startup race).
-      python3 -c "import socket,time
-for _ in range(100):
-    try:
-        socket.create_connection(('127.0.0.1',$proxy_port),0.1).close(); break
-    except OSError: time.sleep(0.05)" 2>/dev/null
+    else
+      kill "$proxy_pid" 2>/dev/null; proxy_pid=""
+      echo "sc: signature proxy failed to start; Gemini 3.x tool calls may error." >&2
     fi
   else
-    echo "sc: python3 not found — Gemini 3.x tool calls need the proxy. Install python3," >&2
+    echo "sc: node not found — Gemini 3.x tool calls need the proxy. Install Node," >&2
     echo "    or set default_model to a 2.5 model in ~/.config/maki/init.lua." >&2
   fi
 

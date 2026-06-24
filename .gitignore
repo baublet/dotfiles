@@ -15,4 +15,4 @@
 !maki/
 !maki/providers/
 !maki/providers/vertex
-!maki/providers/vertex-proxy.py
+!maki/providers/vertex-proxy.js
