@@ -81,14 +81,43 @@ sc() {
 maki.setup({
     always_yolo = true,
     provider = {
-        default_model = "vertex/google/gemini-3.5-flash",
+        default_model = "vertex/gemini-3.5-flash",
     },
 })
 EOF
   fi
-  GOOGLE_VERTEX_PROJECT="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}" \
-  GOOGLE_VERTEX_LOCATION="${GOOGLE_VERTEX_LOCATION:-global}" \
-  maki "$@"
+  local proj="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}"
+  local loc="${GOOGLE_VERTEX_LOCATION:-global}"
+
+  # Gemini 3.x requires a thoughtSignature echoed back on every multi-turn tool
+  # call, which Maki doesn't carry across turns. Run a tiny local proxy that caches
+  # and re-injects those signatures so tool use works. Scoped to this session.
+  local proxy_pid=""
+  if command -v python3 &>/dev/null; then
+    local proxy_port
+    proxy_port=$(python3 -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1]);s.close()' 2>/dev/null)
+    if [ -n "$proxy_port" ]; then
+      GOOGLE_VERTEX_LOCATION="$loc" python3 "$DIR/maki/providers/vertex-proxy.py" "$proxy_port" >/dev/null 2>&1 &
+      proxy_pid=$!
+      export VERTEX_PROXY_PORT="$proxy_port"
+      # Block until the proxy accepts connections (avoids a startup race).
+      python3 -c "import socket,time
+for _ in range(100):
+    try:
+        socket.create_connection(('127.0.0.1',$proxy_port),0.1).close(); break
+    except OSError: time.sleep(0.05)" 2>/dev/null
+    fi
+  else
+    echo "sc: python3 not found — Gemini 3.x tool calls need the proxy. Install python3," >&2
+    echo "    or set default_model to a 2.5 model in ~/.config/maki/init.lua." >&2
+  fi
+
+  GOOGLE_VERTEX_PROJECT="$proj" GOOGLE_VERTEX_LOCATION="$loc" maki "$@"
+  local rc=$?
+
+  [ -n "$proxy_pid" ] && kill "$proxy_pid" 2>/dev/null
+  unset VERTEX_PROXY_PORT
+  return $rc
 }
 unalias gh 2>/dev/null
 gh() {
