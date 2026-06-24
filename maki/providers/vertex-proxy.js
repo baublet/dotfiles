@@ -99,6 +99,20 @@ function captureFromSse(text) {
 }
 
 const server = http.createServer((req, res) => {
+  // Maki's google base probes `{base}/models` to list models, but Vertex has no
+  // such path and returns a 404 HTML page (a noisy "API error 404"). The dynamic
+  // provider already supplies the model catalog, so answer the probe ourselves.
+  const pathNoQuery = (req.url || '').split('?')[0];
+  if (req.method === 'GET' && /\/models$/.test(pathNoQuery)) {
+    const models = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-2.5-pro'].map((id) => ({
+      name: 'models/' + id,
+      supportedGenerationMethods: ['generateContent', 'streamGenerateContent'],
+    }));
+    res.writeHead(200, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({ models }));
+    return;
+  }
+
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
   req.on('end', () => {

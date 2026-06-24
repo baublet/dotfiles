@@ -86,6 +86,13 @@ maki.setup({
 })
 EOF
   fi
+  # Heal stale model ids from the old OpenAI-compat naming (vertex/google/<m> ->
+  # vertex/<m>) so existing configs keep working after the native-endpoint switch.
+  # Portable (no `sed -i`, which differs on macOS); only rewrites when needed.
+  if [ -f "$cfg" ] && grep -q 'vertex/google/' "$cfg" 2>/dev/null; then
+    local tmp
+    tmp=$(mktemp) && sed 's#vertex/google/#vertex/#g' "$cfg" > "$tmp" && mv "$tmp" "$cfg"
+  fi
   local proj="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}"
   local loc="${GOOGLE_VERTEX_LOCATION:-global}"
 
