@@ -27,13 +27,10 @@ ac() {
 }
 unalias dc 2>/dev/null
 dc() {
-  if ! command -v opencode &>/dev/null; then
-    curl -fsSL https://opencode.ai/install | bash
-    export PATH="$HOME/.opencode/bin:$PATH"
-  fi
-  GOOGLE_VERTEX_LOCATION="${GOOGLE_VERTEX_LOCATION:-global}" \
-  GOOGLE_VERTEX_PROJECT="${GOOGLE_VERTEX_PROJECT:-kazoo-engineering}" \
-  OPENCODE_CONFIG_CONTENT='{"permission":"allow"}' opencode "$@"
+  # piqwy — at-will Qwythos coding agent (repo: baublet/ryanmpoe, dir piqwy).
+  # Spins Qwythos up on RunPod behind a local OpenAI proxy + the pi.dev harness;
+  # the pod self-destructs when idle. Once published this can become: npx piqwy "$@"
+  node "$HOME/ryanmpoe/piqwy/piqwy.mjs" "$@"
 }
 unalias sc 2>/dev/null
 sc() {
